@@ -1,0 +1,41 @@
+%        File: summary.tex
+%     Created: Thu Jul 12 07:00 PM 2012 H
+% Last Change: Thu Jul 12 07:00 PM 2012 H
+%
+\documentclass[a4paper]{scrartcl}
+\usepackage{hyperref}
+\usepackage{bibentry}
+\nobibliography*
+\begin{document}
+\title{Ideas on Empirical Studies in Opinion Formation}
+\author{Mathis Antony}
+\maketitle
+\tableofcontents
+\section{Problem}
+Most models in Opinion Formation (OF) have individuals choose between two possible opinions.
+The evolutionary aspect is introduced by randomly updating the opinions of individuals through some well defined model specific procedure.
+In the spatial variant the individuals are placed on nodes of network and each individual interacts only with the ones situated on adjacent vertices.
+
+The typical quantities of interest are the average opinion (often called ``magnetization'' by physicist) and the time it takes for the system to reach some form of equilibrium.
+Thus in order to perform empirical studies we do need to gather data of the average opinion over time.
+In addition to that, it would be interesting to also have information to have information about the underlying network structure or existing communities in the population.
+
+Ideally, an opinion would not have as little effect on the persons behaviour as possible, like for example whether to vote for party A or party B in a political election.
+The problem then is that such an opinion is difficult to capture without directly asking or observing the individual.
+%
+\section{Social Network}
+With social network data it is rather straightforward to obtain information about the network structure but obtaining data about user's opinion may not be as easy.
+We have thought of a few variables that may available and interesting for the study of OF:
+\begin{itemize}
+\item Choice of browser
+\item Choice of OS
+\item Choice of Architecture. Android or iOS? Does a person prefer the mobile app for a certain service or does she like to access it through the browser on her pc?
+\end{itemize}
+\section{In Class Experiments}
+We have the okay from students in the class PHYS4058 Information Physics to ask them a few recurring questions during the semester.
+We will also ask them to submit a list of who they interact with from time to time in order to get an idea on the network structure.
+We are still looking for what we think are suitable questions.
+As a first example, we will ask the students where on campus they ate their last meal.
+This can then easily be mapped to a binary variable.
+\end{document}
+
