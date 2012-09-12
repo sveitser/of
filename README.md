@@ -1,4 +1,6 @@
-opf
+of
 ===
 
-on Opinion Formation
+Notes and Ideas on Opinion Formation.
+
+And hopefully some code soon.
