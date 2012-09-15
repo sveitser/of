@@ -18,12 +18,28 @@ In the spatial variant the individuals are placed on nodes of network and each i
 
 The typical quantities of interest are the average opinion (often called ``magnetization'' by physicist) and the time it takes for the system to reach some form of equilibrium.
 Thus in order to perform empirical studies we do need to gather data of the average opinion over time.
-In addition to that, it would be interesting to also have information to have information about the underlying network structure or existing communities in the population.
+In addition to that, it would be interesting to also have information to have
+information about the underlying network structure or existing communities in
+the population. There are also many studies that obtained very interesting
+results without introducing a network topology. The author of instance
+---ref--- for instance explains via discussion group interaction how a
+bias towards an opinion can lead to a population consenting on what was
+initially the opinion of a minority.
 
-Ideally, an opinion would not have as little effect on the persons behaviour as possible, like for example whether to vote for party A or party B in a political election.
-The problem then is that such an opinion is difficult to capture without directly asking or observing the individual.
+To test the validity of some of the models developed by physicists an opinion
+would not have as little effect on the person's experience as possible, like for
+example whether to vote yes or no to a political issue. As opposed to the choice 
+of a particular software, which may be entirely due to the user's experience
+with the software, rather than the opinion of her peers.
+
+Another problem lies within the difficulty to capture an opinion without directly 
+asking or observing an individual. Because we have neither the funds nor the
+manpower to conduct extensive studies over long periods of time. It may
+therefore be more efficient to extract opinions social network data or other
+sources.
+
 %
-\section{Social Network}
+\section{Social Networks}
 With social network data it is rather straightforward to obtain information about the network structure but obtaining data about user's opinion may not be as easy.
 We have thought of a few variables that may available and interesting for the study of OF:
 \begin{itemize}
@@ -31,6 +47,30 @@ We have thought of a few variables that may available and interesting for the st
 \item Choice of OS
 \item Choice of Architecture. Android or iOS? Does a person prefer the mobile app for a certain service or does she like to access it through the browser on her pc?
 \end{itemize}
+At this point I'm not really sure what sort of useful data from social networks
+is available to us, therefore empirical studies with opinions on these subjects
+may or may not be doable for us.
+
+We could go a step further and extract hidden variables from content on social
+networks. For instance posts on the microblogging website ``twitter''. This
+adds additional complexity to our research as we'll have to learn how to use
+tools created for knowledge extraction. As far as I know this is quite a hot
+research topic itself and there should be plenty of available tools or at least
+algorithms for knowledge extraction out there. On the upside this direction
+would allow us to gather opinions on much more interesting topics such as
+political issues instead of rather mundane topics such as choice of a
+particular browser.
+
+\section{Scanner Data}
+The sociology professor we met suggest us to use scanner data to obtain
+information about shopping behaviour. With this we could for example gather
+opinions on what brand of a particular product people choose. Here the problem
+is that we don't have any precise information about the network structure. It
+may be possible to get a rough idea based on the geographical data of the
+location of a particular shop or even the residential area where a shopper
+lives. Here again I can imagine it to be rather tedious to obtain any data as I
+see no reason for a supermarket chain to give out this data.
+
 \section{In Class Experiments}
 We have the okay from students in the class PHYS4058 Information Physics to ask them a few recurring questions during the semester.
 We will also ask them to submit a list of who they interact with from time to time in order to get an idea on the network structure.
