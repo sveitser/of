@@ -12,7 +12,6 @@
 #define n 3         // number of opinions
 #define N 900       // number of agents
 
-boost::lagged_fibonacci607 lf(time(NULL) + clock());
 
 int main(int argc, char *argv[]){
   if(argc < 2){
@@ -38,6 +37,7 @@ int main(int argc, char *argv[]){
   
   #pragma omp parallel for
   for(run = 0; run < nruns; ++run){
+    boost::lagged_fibonacci607 lf(time(NULL) + clock());
     int s[N] = {0};
     double m[n];
     int k = 0;
