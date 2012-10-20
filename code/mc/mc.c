@@ -15,13 +15,17 @@
 boost::lagged_fibonacci607 lf(time(NULL) + clock());
 
 int main(int argc, char *argv[]){
-  if(argc != 2){
-    printf("usage: mc p\n");
+  if(argc < 2){
+    printf("usage: mc p (nruns) (tmax)\n");
     exit(1);
   }
  
   int nruns = 1000;
   double p = atof(argv[1]);
+  double tmax = 1e9 * N;
+  if(argc > 2){nruns = atoi(argv[2]);}
+  if(argc > 3){tmax = atof(argv[3]) * N;}
+
   double q = 1.0 - p;
   double dN = 1.0 / N;
   srand(time(NULL) + clock());
@@ -43,7 +47,7 @@ int main(int argc, char *argv[]){
     for( ; i < N; ++i)
       s[i] = i % n;
     double t = 0.0;
-    while(1){
+    while(t < tmax){
       ++t;
       int a = lf() * N;
       int oa = s[a];
@@ -100,6 +104,8 @@ int main(int argc, char *argv[]){
         break;
     }
     printf("%.5f\n",t/N);
+    if(int(t) % 100 == 0)
+      fflush(stdout);
   }
   return 0;
 }
