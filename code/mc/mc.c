@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <omp.h>
 #include <boost/random/lagged_fibonacci.hpp> // so much faster than rand() !?
+
 
 #define n 3         // number of opinions
 #define N 900       // number of agents
@@ -29,7 +31,9 @@ int main(int argc, char *argv[]){
   q = q * eta / N;
 
   int run = 0;
-  for( ; run < nruns; ++run){
+  
+  #pragma omp parallel for
+  for(run = 0; run < nruns; ++run){
     int s[N] = {0};
     double m[n];
     int k = 0;
