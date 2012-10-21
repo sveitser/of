@@ -12,7 +12,6 @@
 #define n 3         // number of opinions
 #define N 900       // number of agents
 
-
 int main(int argc, char *argv[]){
   if(argc < 2){
     printf("usage: mc p (nruns) (tmax)\n");
@@ -24,6 +23,8 @@ int main(int argc, char *argv[]){
   double tmax = 1e9 * N;
   if(argc > 2){nruns = atoi(argv[2]);}
   if(argc > 3){tmax = atof(argv[3]) * N;}
+
+  srand(time(NULL));
 
   double q = 1.0 - p;
   double dN = 1.0 / N;
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]){
   
   #pragma omp parallel for
   for(run = 0; run < nruns; ++run){
-    boost::lagged_fibonacci607 lf(time(NULL) + clock());
+    boost::lagged_fibonacci607 lf(time(NULL) + clock() - rand());
     int s[N] = {0};
     double m[n];
     int k = 0;
