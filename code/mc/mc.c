@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
   
   #pragma omp parallel for
   for(run = 0; run < nruns; ++run){
-    boost::lagged_fibonacci607 lf(time(NULL) + clock() - rand());
+    boost::lagged_fibonacci607 lf(time(NULL) + clock() + run);
     int s[N] = {0};
     double m[n];
     int k = 0;
