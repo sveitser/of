@@ -10,7 +10,7 @@ uc = zeros(size(ps));
 for i=1:length(ps);
    p = ps(i);
    try
-        d=load(['N90_p_',num2str(p),'.dat']);
+        d=load(['../data/N_2700_p_',num2str(p),'.dat']);
    catch
        break
    end
@@ -28,28 +28,19 @@ end
 figure
 ax1 = gca;
 hold on
-%errorbar(ps,mu,lc-mu,uc-mu,'x')
-[ax, h1, h2] = plotyy(ps,mu,ps,mdata,@(x,y) plot(x,y,'x'))
-axes(ax(1)); hold on;
-errorbar(ps,mu,lc-mu,uc-mu,'x');
-axes(ax(2)); hold on;
+[ax, h1, h2] = plotyy(ps,mu,ps,mdata,@(x,y) ...
+    errorbar(x,y,lc-mu,uc-mu,'x'), @(x,y) plot(x,y,'or'));
 ylabel('\mu')
 xlabel('p')
+axes(ax(2));
+hold on
+xlim([0.4975,0.5525])
+linkaxes(ax,'x')
 legend('Location parameter \mu','Location','NorthWest');
-%ax2 = axes('Position',get(ax1,'Position'),...
-%       'XAxisLocation','top',...
-%       'YAxisLocation','right',...
-%       'Color','none',...
-%       'XColor','k','YColor','k');
-%linkaxes([ax1 ax2],'x');
-%hold on
-plot(ax(2),ps,mdata,'or','Parent',ax2);
-plot(ax(2),ps,mfit,'sg','Parent',ax2);
+plot(ps,mfit,'sg','Parent',ax(2));
 
 legend('Fit mean: \mu + \sigma (\Gamma(1+\xi)-1) / \xi','Empirical mean')
 title('Generalized Extreme Value Fit Location Parameter \mu with 95% Confidence Intervals')
-xlabel('p');
-ylabel('m');
-
+xlabel('p')
+ylabel('m')
 box on
-axis('tight')
