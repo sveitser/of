@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
       s[a] = maj_op;
       int done = 0;
       for(int k = 0 ; k < n; ++k){
-        if(m[k] < dN){
+        if(m[k] > 1.0 - dN){
           done = 1;
         } 
       }

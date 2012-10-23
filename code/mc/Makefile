@@ -1,8 +1,8 @@
 TARGET   = mc
 CC       = g++
 # compiling flags here
-CFLAGS   = -Ofast -fopenmp
-LFLAGS 	 = -fopenmp
+CFLAGS   = -Ofast -fopenmp -march=native
+LFLAGS 	 = -Ofast -fopenmp -march=native
 # change these to set the proper directories where each files shoould be
 SRCDIR   = src
 OBJDIR   = obj
