@@ -9,8 +9,8 @@
 #include <boost/random/lagged_fibonacci.hpp> // so much faster than rand() !?
 
 
-#define n 3         // number of opinions
-#define N 900       // number of agents
+const int n = 3;    // number of opinions
+const int N = 900;  // number of agents
 
 int main(int argc, char *argv[]){
   if(argc < 2){
@@ -34,10 +34,9 @@ int main(int argc, char *argv[]){
   p = p * eta / N;
   q = q * eta / N;
 
-  int run = 0;
   
   #pragma omp parallel for
-  for(run = 0; run < nruns; ++run){
+  for(int run = 0; run < nruns; ++run){
     boost::lagged_fibonacci607 lf(time(NULL) + clock() + run);
     int s[N] = {0};
     double m[n];
@@ -53,8 +52,7 @@ int main(int argc, char *argv[]){
       int a = lf() * N;
       int oa = s[a];
       int neiops[n] = {0};
-      int j = 0;
-      for( ; j < N; ++j){
+      for(int j = 0; j < N; ++j){
         double r = lf();
         if(s[j] == oa){
           if(r < p){
@@ -68,8 +66,7 @@ int main(int argc, char *argv[]){
       }
       int n_maj = - 1;
       int maj_op = - 1;
-      int k = 0;
-      for( ; k < n; ++k){
+      for(int k = 0; k < n; ++k){
         if(neiops[k] >= n_maj){
           n_maj = neiops[k];
           maj_op = k;
@@ -81,8 +78,7 @@ int main(int argc, char *argv[]){
       }
 
       int nmajority = 0;
-      k = 0;
-      for( ; k < n; ++k){
+      for(int k = 0 ; k < n; ++k){
         if(neiops[k] >= n_maj){
           ++nmajority;
         }
@@ -94,10 +90,9 @@ int main(int argc, char *argv[]){
       m[maj_op] += dN;
       m[oa] -= dN;
       s[a] = maj_op;
-      k = 0;
       int done = 0;
-      for( ; k < n; ++k){
-        if(m[k] > 1.0 - dN){
+      for(int k = 0 ; k < n; ++k){
+        if(m[k] < dN){
           done = 1;
         } 
       }
@@ -105,8 +100,8 @@ int main(int argc, char *argv[]){
         break;
     }
     printf("%.5f\n",t/N);
-    if(int(t) % 100 == 0)
-      fflush(stdout);
+    // if(int(t) % 100 == 0) // for p < 0.3 
+    //   fflush(stdout);
   }
   return 0;
 }
