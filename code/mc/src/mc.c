@@ -10,19 +10,19 @@
 
 
 const int n = 3;    // number of opinions
-const int N = 900;  // number of agents
 
 int main(int argc, char *argv[]){
-  if(argc < 2){
-    printf("usage: mc p (nruns) (tmax)\n");
+  if(argc < 3){
+    printf("usage: mc N p (nruns = 1000) (tmax)\n");
     exit(1);
   }
  
   int nruns = 1000;
-  double p = atof(argv[1]);
+  int N = atoi(argv[1]);
+  double p = atof(argv[2]);
   double tmax = 1e9 * N;
-  if(argc > 2){nruns = atoi(argv[2]);}
-  if(argc > 3){tmax = atof(argv[3]) * N;}
+  if(argc > 3){nruns = atoi(argv[3]);}
+  if(argc > 4){tmax = atof(argv[4]) * N;}
 
   srand(time(NULL));
 
@@ -38,14 +38,12 @@ int main(int argc, char *argv[]){
   #pragma omp parallel for
   for(int run = 0; run < nruns; ++run){
     boost::lagged_fibonacci607 lf(time(NULL) + clock() + run);
-    int s[N] = {0};
+    int* s = (int *) malloc(N * sizeof(int));
     double m[n];
-    int k = 0;
-    for( ; k < n; ++k)
+    for(int k = 0; k < n; ++k)
       m[k] = 1.0 / n;
-    int i = 0;
-    for( ; i < N; ++i)
-      s[i] = i % n;
+    for(int k = 0; k < N; ++k)
+      s[k] = k % n;
     double t = 0.0;
     while(t < tmax){
       ++t;
@@ -100,8 +98,7 @@ int main(int argc, char *argv[]){
         break;
     }
     printf("%.5f\n",t/N);
-    // if(int(t) % 100 == 0) // for p < 0.3 
-    //   fflush(stdout);
+    free(s);
   }
   return 0;
 }
