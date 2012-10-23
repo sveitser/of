@@ -1,15 +1,12 @@
 /*
  *  Implementation of opinion formation model for benchmarking against julia
- *  version. Bottleneck is the RNG.
+ *  version. Bottleneck here seems to be the RNG.
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <fstream>
+#include <ctime>
 #include <omp.h>
-#include <boost/random/lagged_fibonacci.hpp> // so much faster than rand() !?
-
-
-const int n = 3;    // number of opinions
+#include <boost/random.hpp> 
+#include <boost/format.hpp>
 
 int main(int argc, char *argv[]){
   if(argc < 3){
@@ -17,19 +14,18 @@ int main(int argc, char *argv[]){
     exit(1);
   }
  
+  const int N = atoi(argv[1]);                // number of agents
+  const int n = 3;                            // number of opinions
+  double p = atof(argv[2]);                   // degree of homophily
+  double tmax = 1e9 * N;                      // max number of MC steps
   int nruns = 1000;
-  int N = atoi(argv[1]);
-  double p = atof(argv[2]);
-  double tmax = 1e9 * N;
   if(argc > 3){nruns = atoi(argv[3]);}
   if(argc > 4){tmax = atof(argv[4]) * N;}
 
-  srand(time(NULL));
+  std::ofstream fout(str(boost::format("data/N%d_p%.3f.dat") % N % p).c_str());
 
   double q = 1.0 - p;
   double dN = 1.0 / N;
-  srand(time(NULL) + clock());
-
   double eta = 10;
   p = p * eta / N;
   q = q * eta / N;
@@ -97,9 +93,11 @@ int main(int argc, char *argv[]){
       if(done)
         break;
     }
-    printf("%.5f\n",t/N);
+    // printf("%.5f\n",t/N);
+    fout << t/N << "\n";
     free(s);
   }
+  fout.close();
   return 0;
 }
 
