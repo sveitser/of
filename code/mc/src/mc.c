@@ -68,21 +68,18 @@ int main(int argc, char *argv[]){
         }
       }
 
-      if(maj_op == oa){
-        continue;
-      }
-
       int nmajority = 0;
       for(int k = 0 ; k < n; ++k){
         if(neiops[k] >= n_maj){
           ++nmajority;
         }
       }
-      if(nmajority > 1){
+            
+      free(neiops);
+
+      if(nmajority > 1 || maj_op == oa){
         continue;
       }
-
-      free(neiops);
       
       m[maj_op] += dN;
       m[oa] -= dN;
