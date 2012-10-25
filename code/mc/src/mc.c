@@ -100,7 +100,8 @@ int main(int argc, char *argv[]){
   }
 
   std::ofstream fout(str(boost::format(
-          "data/n%d_N%d_p%.3f.dat") % n % N % p_abs).c_str());
+          "data/n%d_N%d_p%.3f.dat") % n % N % p_abs).c_str(),
+          std::ios_base::app);
   for(int i = 0; i < nruns; ++i)
     fout << results[i] << std::endl;
   fout.close();
