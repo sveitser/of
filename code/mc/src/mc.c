@@ -17,18 +17,18 @@ int main(int argc, char *argv[]){
  
   const int n = atoi(argv[1]);                // number of opinions
   const int N = atoi(argv[2]);                // number of agents
-  double p = atof(argv[3]);                   // degree of homophily
+  const double p_abs = atof(argv[3]);         // degree of homophily
   double tmax = 1e9 * N;                      // max number of MC steps
   int nruns = 1000;
   if(argc > 4){nruns = atoi(argv[4]);}
   if(argc > 5){tmax = atof(argv[5]) * N;}
 
 
-  double q = 1.0 - p;
-  double dN = 1.0 / N;
-  double eta = 10;
-  p = p * eta / N;
-  q = q * eta / N;
+  const double q_abs = 1.0 - p_abs;
+  const double dN = 1.0 / N;
+  const double eta = 10;
+  const double p = p_abs * eta / N;
+  const double q = q_abs * eta / N;
 
   double* results = (double *) calloc(nruns, sizeof(double));
   
@@ -100,7 +100,8 @@ int main(int argc, char *argv[]){
   }
 
   std::ofstream fout(str(boost::format(
-          "data/n%d_N%d_p%.3f.dat") % n % N % p).c_str());
+          "data/n%d_N%d_p%.3f.dat") % n % N % p_abs).c_str(),
+          std::ios_base::app);
   for(int i = 0; i < nruns; ++i)
     fout << results[i] << std::endl;
   fout.close();
