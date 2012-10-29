@@ -15,7 +15,7 @@ for i=1:N
 end
 
 lambdas = abs(eig(L));
-lambda = min(lambdas(lambdas > 0));
+lambda = min(lambdas(lambdas > eps));
 
     function b = birth(M)
         if M == 0,
@@ -24,7 +24,7 @@ lambda = min(lambdas(lambdas > 0));
             b = (N-M)/N * binosums(M);
         end
     end
-    
+
     function d = death(M)
         if M == N,
             d = 0;
