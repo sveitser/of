@@ -1,0 +1,51 @@
+\documentclass[a4paper,12pt]{scrartcl}
+\usepackage{hyperref}
+\usepackage{bibentry}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\title{Consensus Time around $p_{c1}$ for Two Opinions}
+\author{Mathis Antony}
+
+\begin{document}
+
+\maketitle
+
+In \cite{Schmittmann2010}, the authors give a framework to compute the time required to reach a consensus. The authors show that in their model, metastable states decay as $e^{-\lambda_1 t}$, where $\lambda_1$ is the smallest nonzero eigenvalue of the time evolution (or Liouville) operator given by
+\begin{equation}
+\widehat{\mathbb{L}} = \left( \begin{array}{cccc}  & - d_1 & &  \\ 
+-b_0 & (b_1+d_1) & & \\
+&  & \ddots & \\
+& & & -d_N \\
+ & & -b_{N-1} & 
+\end{array}
+ \right) 
+\end{equation}
+where 
+\begin{equation}
+d_M = \frac{M}{N} \sum_{k=0}^{M-1}\sum_{k'=0}^{N-M} B_{M-1,\eta p/N}(k) B_{N-M,\eta q/N}(k') \Theta(k'-k)
+\end{equation}
+and
+\begin{equation}
+b_M = \frac{N-M}{N} \sum_{l=0}^{N-M-1}\sum_{l'=0}^{M} B_{N-M-1,\eta p/N}(l) B_{M,\eta q/N}(l') \Theta(l'-l)
+\end{equation}
+with
+\begin{equation}
+B_{M,x}(k) =  \left( \begin{array}{c}M\\k\end{array} \right)
+x^k (1-x)^{M-k} \, 
+\end{equation}
+and $b_0=d_N=0$. The average lifetime is thus given by $\tau=1/\lambda_1$. In figure \ref{fig:1} we observe the time dependence of $\tau$ on the number of agents $N$ for an average group size $\eta=10$ and values of $p$ around $p_{c1}\approx 0.3$. This is the value of $p$ below which simulations show an extremely long consensus time. We also let $q=1-p$.
+%
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{../code/mf/tau_vs_n_loglog.pdf}
+\caption{Consensus time $\tau$ as function of number of agents $N$. Note the logarithmic scales on both axes.}
+\label{fig:1}
+\end{figure}
+%
+We can see a power law relation for $p>p_{c1}$ but an exponential relation for $p<p_{c1}$. For a number of agents on the order of 1000 the consensus times are astronomical for $p<p_{c1}$ and agree with what we observed in the simulations. For more qualitative agreement we would have to do more simulations. However I am quite certain the agreement will about as good as what the authors of \cite{PhysRevE.79.046104} observed in the case $p=0.2$ for $20\leq N \leq 100$.
+
+It might be possible to get a better idea of the relation between $\lambda_1$ and $N$ by inspecting the tridiagonal matrix $\widehat{\mathbb L}$ more in detail and if one is able to simplify the expression of the birth and death rates with intensive average degree similar to what is done in \cite{PhysRevE.79.046104} for extensive average degree.
+
+\bibliographystyle{unsrt}
+\bibliography{../papers/refs/refs.bib}
+\end{document}
