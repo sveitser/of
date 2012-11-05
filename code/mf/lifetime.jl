@@ -7,7 +7,7 @@ function lifetime(p, N, eta)
   L = zeros(N + 1, N + 1)
   
   function death(M)
-    if M == N        # probably wrong
+    if M == N   
       return 0 
     end
     if M == 1
@@ -19,9 +19,9 @@ function lifetime(p, N, eta)
     p2 = reverse(cumsum(pmf(B2, N - M : -1 : 0)))
     ds = pmf(B1, 0 : M - 1)
     d = 0
-    for k in 1 : M 
+    for k in 0 : M - 1
       t = if k < N - M + 1 p2[k + 1] else 0 end
-      d += ds[k] * t
+      d += ds[k + 1] * t
     end
     return M / N * d
   end
@@ -36,25 +36,30 @@ function lifetime(p, N, eta)
       B1 = binom(N - M - 1, p * eta / N)
     end
     B2 = binom(M, (1 - p) * eta / N)
-    p2 = reverse(cumsum(pmf(B2,M - 1 : -1 : 0)))
+    p2 = reverse(cumsum(pmf(B2,M : -1 : 0)))
     ds = pmf(B1, 0 : N - M - 1)
     b = 0
-    for l in 1 : N - M
-        t = if l < M p2[l + 1] else 0 end
-        b += ds[l] * t
+    for l in 0 : N - M - 1
+        t = if l <= M p2[l + 1] else 0 end
+        b += ds[l + 1] * t
     end
-    return (N - M) / M * b
+    return (N - M) / N * b
   end
 
+  deaths = [death(i) for i in 1:N]
+
   for i in 1:N
-      L[i, i + 1] = death(i)
-      L[i + 1, i] = birth(i - 1)
+      L[i, i + 1] = deaths[i]
+      #L[i + 1, i] = birth(i - 1)
+      L[i + 1, i] = deaths[N - i + 1]
       if i > 1 
           L[i, i] = - (L[i + 1, i] + L[i - 1, i])
       end
   end
 
-  return L
+  v = min(abs(eigvals(L[2:end-1,2:end-1])))
+
+  return v
 
 
 end
