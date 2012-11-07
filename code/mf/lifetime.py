@@ -9,7 +9,7 @@ from scipy.stats import binom
 from numpy.linalg import eigvals, inv
 from scipy.sparse.linalg import eigs
 
-def lifetime(p, N, eta):
+def timeev(p, N, eta):
   L = np.zeros([N + 1, N + 1])
   ms = range(0, N)
 
@@ -27,6 +27,7 @@ def lifetime(p, N, eta):
     for k in range(M):
       t = p2s[k + 1] if k + 1 < N - M + 1 else 0
       d += pmf1(k) * t
+      print M, pmf1(k), k, t, d
     return M / N * d
 
   def birth(M):
@@ -45,23 +46,23 @@ def lifetime(p, N, eta):
       b += t * pmf1(l)
     return (N - M) / N * b
 
+  ds = [death(i) for i in range(1, N + 1)]
   for i in range(N):
-    L[i, i + 1] = death(i + 1)
-    L[i + 1, i] = birth(i)
+    L[i, i + 1] = ds[i]
+    L[i + 1, i] = ds[N - i - 1]
     if i > 0 and i < N:
-      L[i, i] = -(birth(i) + death(i))
+      L[i, i] = -(ds[N - i - 1] + ds[i - 1])
 
+  return L
+
+def minev(L):
   # remove the first/last row/column
   L = L[1:-1,1:-1]
-  
+  val = min(abs(eigvals(L)))
+  return val
 
-  val = eigvals(inv(L))
-  val = abs(val)
-  val = max(val)
-  #l = max(lambdas[lambdas > 0])
-  l = val
-
-  return l
+def lifetime(p, n, eta):
+  return 1.0 / minev(timeev(p, n, eta))
 
 if __name__ == "__main__":
   p = 0.3

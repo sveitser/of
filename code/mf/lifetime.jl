@@ -1,9 +1,9 @@
 #!/usr/bin/julia
-load("extras/distributions.jl")
+load("distributions.jl")
 binom = Distributions.Binomial
 pmf = Distributions.pmf
 
-function lifetime(p, N, eta)
+function timeev(p, N, eta)
   L = zeros(N + 1, N + 1)
   
   function death(M)
@@ -20,8 +20,11 @@ function lifetime(p, N, eta)
     ds = pmf(B1, 0 : M - 1)
     d = 0
     for k in 0 : M - 1
-      t = if k < N - M + 1 p2[k + 1] else 0 end
-      d += ds[k + 1] * t
+      #t = if k + 1 < N - M + 1 p2[k + 1] else 0 end
+      if k + 1 < N - M + 1
+        d += ds[k + 1] * p2[k + 2]
+      end
+      #println(M," ",pmf(B1,k)," ",k," ",t," ",d)
     end
     return M / N * d
   end
@@ -56,10 +59,27 @@ function lifetime(p, N, eta)
           L[i, i] = - (L[i + 1, i] + L[i - 1, i])
       end
   end
-
-  v = min(abs(eigvals(L[2:end-1,2:end-1])))
-
-  return v
-
-
+   return L
 end
+
+function minev(L)
+   return min(abs(eigvals(L[2:end-1,2:end-1])))
+end
+
+function lifetime(p, n, eta)
+    return 1/minev(timeev(p, n, eta))
+end
+
+
+# ps = linspace(0.5,0.7,640)
+# N = 20
+# eta = 10
+# ts = float([lifetime(p, N, eta) for p in ps])
+
+# load("plot.jl")
+# using Plot
+
+# fname = "test.pdf"
+# pl = semilogy(ps, ts)
+# file(pl, fname)
+# system(strcat("evince ", fname))
