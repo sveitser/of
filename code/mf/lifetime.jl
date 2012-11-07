@@ -6,6 +6,25 @@ pmf = Distributions.pmf
 function timeev(p, N, eta)
   L = zeros(N + 1, N + 1)
   
+  function death_loop(M)
+    if M == N   
+      return 0 
+    end
+    if M == 1
+      B1 = binom(1, 0)
+    else
+      B1 = binom(M - 1, p * eta / N)
+    end
+    B2 = binom(N - M, (1 - p) * eta / N)
+    d = 0
+    for k in 0 : M - 1
+        for l in k + 1 : N - M
+            d += pmf(B1, k) * pmf(B2, l)
+        end
+    end
+    return M / N * d
+  end
+
   function death(M)
     if M == N   
       return 0 
@@ -20,11 +39,9 @@ function timeev(p, N, eta)
     ds = pmf(B1, 0 : M - 1)
     d = 0
     for k in 0 : M - 1
-      #t = if k + 1 < N - M + 1 p2[k + 1] else 0 end
-      if k + 1 < N - M + 1
+      if k < N - M 
         d += ds[k + 1] * p2[k + 2]
       end
-      #println(M," ",pmf(B1,k)," ",k," ",t," ",d)
     end
     return M / N * d
   end
@@ -39,12 +56,13 @@ function timeev(p, N, eta)
       B1 = binom(N - M - 1, p * eta / N)
     end
     B2 = binom(M, (1 - p) * eta / N)
-    p2 = reverse(cumsum(pmf(B2,M : -1 : 0)))
+    p2s = reverse(cumsum(pmf(B2,M : -1 : 0)))
     ds = pmf(B1, 0 : N - M - 1)
     b = 0
     for l in 0 : N - M - 1
-        t = if l <= M p2[l + 1] else 0 end
-        b += ds[l + 1] * t
+        if l < M 
+            b += ds[l + 1] * p2s[l + 2]
+        end
     end
     return (N - M) / N * b
   end
@@ -53,7 +71,7 @@ function timeev(p, N, eta)
 
   for i in 1:N
       L[i, i + 1] = deaths[i]
-      #L[i + 1, i] = birth(i - 1)
+      # L[i + 1, i] = birth(i - 1)
       L[i + 1, i] = deaths[N - i + 1]
       if i > 1 
           L[i, i] = - (L[i + 1, i] + L[i - 1, i])
@@ -70,7 +88,7 @@ function lifetime(p, n, eta)
     return 1/minev(timeev(p, n, eta))
 end
 
-
+### some tests
 # ps = linspace(0.5,0.7,640)
 # N = 20
 # eta = 10
