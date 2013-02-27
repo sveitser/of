@@ -62,9 +62,9 @@ class System:
         while True:
             self.update()
             t += 1/self.n
-            if self.m == 0 or self.m == self.n 
+            if self.m == 0 or self.m == self.n: 
                 return t
-            else if not nx.is_connected(self.graph):
+            elif not nx.is_connected(self.graph):
                 return t
                 
             
@@ -75,7 +75,7 @@ def eval(tup):
 
 if __name__ == "__main__":
     pool = Pool(processes=8)
-    runs = 100
+    runs = 1000
 
     f = open("grid.dat", 'w')
     print("# phi eta t", file=f)
