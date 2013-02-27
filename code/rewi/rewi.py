@@ -74,16 +74,14 @@ def eval(tup):
     return S.run()
 
 if __name__ == "__main__":
-    print("testing...")
     pool = Pool(processes=8)
     runs = 100
-    ts = {}
 
     f = open("grid.dat", 'w')
-    print("# phi eta t",file=f)
+    print("# phi eta t", file=f)
 
-    for phi in np.linspace(0.05,0.95,19):
-        for eta in np.linspace(0.05,0.95,19):
+    for phi in np.linspace(0.05, 0.95, 19):
+        for eta in np.linspace(0.05, 0.95, 19):
             ts = pool.map(eval, [(phi, eta)] * runs)
             print(phi, eta, np.mean(ts), file=f, flush=True)
 
