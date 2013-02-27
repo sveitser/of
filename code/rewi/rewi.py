@@ -4,6 +4,7 @@ import numpy as np
 from numpy.random import randint
 from numpy.random import rand
 from multiprocessing import Pool
+import matplotlib.pyplot as plt
 
 eps = 1e-10
 
@@ -36,11 +37,23 @@ class System:
 
         candidates = np.nonzero(candidates)[0]
         
-        if neis:
-            self.graph.remove_edge(i, neis[randint(len(neis))])
         if list(candidates):
+
             newnei = candidates[randint(len(candidates))]
             self.graph.add_edge(i, newnei)
+
+            if neis:
+                oldnei = neis[randint(len(neis))]
+
+                # if oldnei is now alone, reconnect it randomly
+                # too keep the graph connected
+                if len(list(self.graph.edge[oldnei].keys())) <= 1:
+                    cands = list(set(range(self.n)).difference([i, oldnei]))
+                    c = cands[randint(len(cands))]
+                    self.graph.add_edge(oldnei, c)
+
+                self.graph.remove_edge(i, oldnei)
+
         
     def update_state(self, i):
         neis = list(self.graph.edge[i].keys())
@@ -65,8 +78,8 @@ class System:
             if self.m == 0 or self.m == self.n: 
                 return t
             elif not nx.is_connected(self.graph):
-                return t
-                
+                print("not connected, shouldn't happen, exiting")
+                exit(1)
             
 def eval(tup):
     phi, eta = tup
@@ -75,12 +88,12 @@ def eval(tup):
 
 if __name__ == "__main__":
     pool = Pool(processes=8)
-    runs = 1000
+    runs = 100
 
-    f = open("grid.dat", 'w')
+    f = open("grid100.dat", 'w')
     print("# phi eta t", file=f)
 
-    for phi in np.linspace(0.05, 0.95, 19):
+    for phi in np.linspace(0.05, 0.9, 18):
         for eta in np.linspace(0.05, 0.95, 19):
             ts = pool.map(eval, [(phi, eta)] * runs)
             print(phi, eta, np.mean(ts), file=f, flush=True)
