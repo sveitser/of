@@ -4,6 +4,8 @@ import numpy as np
 from numpy.random import randint
 from numpy.random import rand
 
+eps = 1e-10
+
 class System:
     def __init__(self, n, generator, genargs=None, phi=0.5, eta=0.5):
         """
@@ -11,27 +13,73 @@ class System:
         eta: fraction of heterophil (type 1) agents
         """
         self.graph = generator(n, *genargs)
-        self.opinions = [randin(2) if for i in range(n)]
-        self.types = [0 if rand() > eta else 1 for i in range(n)]
+        self.opinions = np.array([randint(2) for i in range(n)])
+        self.types = np.array([0 if rand() > eta else 1 for i in range(n)])
         self.phi = phi
+        self.n = n
+        self.m = sum(self.opinions)
     
     def update_link(self, i):
-        neis = self.graph.edge[i]
-        self.graph.remove_edge(i, neis[randint(len(neis)))
-        strangers = list(set(range(n)).difference(self.graph.edge[i] + [i]))
-        self.graph.add_edge(i, strangers[randint(len(strangers))])
-        
+        n = self.n
+        neis = list(self.graph.edge[i].keys())
+        candidates = np.ones(n, dtype=int)
+        candidates[i] = 0
+        candidates[neis] = 0
 
+        if self.types[i] == 0:    
+            candidates[candidates != self.opinions[i]] = 0
+        else:
+            candidates[candidates == self.opinions[i]] = 0
+
+        candidates = np.nonzero(candidates)[0]
+        
+        if neis:
+            self.graph.remove_edge(i, neis[randint(len(neis))])
+        if list(candidates):
+            newnei = candidates[randint(len(candidates))]
+            self.graph.add_edge(i, newnei)
+        
     def update_state(self, i):
+        neis = list(self.graph.edge[i].keys())
+        oi = self.opinions[i]
+        if sum(self.opinions[neis] == oi) < 0.5 * len(neis):
+            self.m += -2*oi + 1
+            self.opinions[i] = (oi + 1) % 2
+
+    def update(self):
+        i = randint(self.n)
+        if rand() < self.phi:
+            self.update_link(i)
+        else:
+            self.update_state(i)
 
 
-    def update(self, fun):
-        
+    def run(self):
+        t = 0
+        while True:
+            self.update()
+            # print(self.m)
+            t += 1/self.n
+            if self.m == 0 or self.m == self.n:
+                return t
+                
+            
+
     
 
 if __name__ == "__main__":
     print("testing...")
-    S = System(100, nx.generators.barabasi_albert_graph, [4], 0.5, 0.1)
+    runs = 100
+    ts = {}
 
+    f = open("grid.dat", 'w')
+    print("# phi eta t",file=f)
 
-    print(S.graph.degree())
+    for phi in np.linspace(0.05,0.95,19):
+        for eta in np.linspace(0.05,0.95,19):
+            ts[(phi, eta)] = [] 
+            for r in range(runs):
+                S = System(100, nx.generators.barabasi_albert_graph, [4], phi, 0)
+                ts[(phi, eta)].append(S.run())
+            print(phi, eta, np.mean(ts[(phi, eta)]), file=f, flush=True)
+
