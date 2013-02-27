@@ -61,9 +61,10 @@ class System:
         t = 0
         while True:
             self.update()
-            # print(self.m)
             t += 1/self.n
-            if self.m == 0 or self.m == self.n:
+            if self.m == 0 or self.m == self.n 
+                return t
+            else if not nx.is_connected(self.graph):
                 return t
                 
             
@@ -82,7 +83,7 @@ if __name__ == "__main__":
     print("# phi eta t",file=f)
 
     for phi in np.linspace(0.05,0.95,19):
-        for eta in np.linspace(0.05,0.5,20):
+        for eta in np.linspace(0.05,0.95,19):
             ts = pool.map(eval, [(phi, eta)] * runs)
             print(phi, eta, np.mean(ts), file=f, flush=True)
 
