@@ -3,6 +3,7 @@ import networkx as nx
 import numpy as np
 from numpy.random import randint
 from numpy.random import rand
+from multiprocessing import Pool
 
 eps = 1e-10
 
@@ -66,23 +67,22 @@ class System:
                 return t
                 
             
-
-    
+def eval(tup):
+    phi, eta = tup
+    S = System(100, nx.generators.barabasi_albert_graph, [4], phi, eta)
+    return S.run()
 
 if __name__ == "__main__":
     print("testing...")
-    runs = 10
+    pool = Pool(processes=8)
+    runs = 100
     ts = {}
 
     f = open("grid.dat", 'w')
     print("# phi eta t",file=f)
 
     for phi in np.linspace(0.05,0.95,19):
-        for eta in np.linspace(0.05,0.95,19):
-            ts[(phi, eta)] = [] 
-            for r in range(runs):
-                S = System(100, nx.generators.barabasi_albert_graph, [4], phi, 0)
-                ts[(phi, eta)].append(S.run())
-        for eta in np.linspace(0.05,0.95,19):
-            print(phi, eta, np.mean(ts[(phi, eta)]), file=f, flush=True)
+        for eta in np.linspace(0.05,0.5,20):
+            ts = pool.map(eval, [(phi, eta)] * runs)
+            print(phi, eta, np.mean(ts), file=f, flush=True)
 
