@@ -13,8 +13,9 @@ class System:
         eta: fraction of heterophil (type 1) agents
         """
         self.graph = generator(n, *genargs)
-        self.opinions = np.array([randint(2) for i in range(n)])
-        self.types = np.array([0 if rand() > eta else 1 for i in range(n)])
+        self.opinions = np.array([randint(2) for i in range(n)], dtype=int)
+        self.types = np.array([0 if rand() > eta else 1 for i in range(n)],
+                dtype=int)
         self.phi = phi
         self.n = n
         self.m = sum(self.opinions)
@@ -25,11 +26,12 @@ class System:
         candidates = np.ones(n, dtype=int)
         candidates[i] = 0
         candidates[neis] = 0
+        oi = self.opinions[i]
 
         if self.types[i] == 0:    
-            candidates[candidates != self.opinions[i]] = 0
+            candidates[self.opinions[candidates] != oi] = 0
         else:
-            candidates[candidates == self.opinions[i]] = 0
+            candidates[self.opinions[candidates] == oi] = 0
 
         candidates = np.nonzero(candidates)[0]
         
@@ -69,7 +71,7 @@ class System:
 
 if __name__ == "__main__":
     print("testing...")
-    runs = 100
+    runs = 10
     ts = {}
 
     f = open("grid.dat", 'w')
@@ -81,5 +83,6 @@ if __name__ == "__main__":
             for r in range(runs):
                 S = System(100, nx.generators.barabasi_albert_graph, [4], phi, 0)
                 ts[(phi, eta)].append(S.run())
+        for eta in np.linspace(0.05,0.95,19):
             print(phi, eta, np.mean(ts[(phi, eta)]), file=f, flush=True)
 
