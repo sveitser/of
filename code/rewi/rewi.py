@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 import networkx as nx
-import numpy as np
-from numpy.random import randint
-from numpy.random import rand
+#import numpypy as np
+import numpypy as np
+#from numpypy.random import randint
+#from numpypy.random import rand
+import random
+from random import random as rand
 from multiprocessing import Pool
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
+
+def randint(n):
+    return random.randint(0, n - 1)
 
 eps = 1e-10
 
@@ -27,7 +33,8 @@ class System:
         neis = list(self.graph.edge[i].keys())
         candidates = np.ones(n, dtype=int)
         candidates[i] = 0
-        candidates[neis] = 0
+        #candidates[neis] = 0
+        candidates[neis] = [0] * len(neis) # pypy
         oi = self.opinions[i]
 
         if self.types[i] == 0:    
@@ -35,8 +42,9 @@ class System:
         else:
             candidates[self.opinions[candidates] == oi] = 0
 
-        candidates = np.nonzero(candidates)[0]
-        
+        #candidates = np.nonzero(candidates)[0]
+        candidates = [k for k in range(n) if candidates[k] == 1] # pypy
+
         if list(candidates):
 
             newnei = candidates[randint(len(candidates))]
@@ -51,8 +59,9 @@ class System:
                     cands = list(set(range(self.n)).difference([i, oldnei]))
                     c = cands[randint(len(cands))]
                     self.graph.add_edge(oldnei, c)
-
+                
                 self.graph.remove_edge(i, oldnei)
+
 
         
     def update_state(self, i):
@@ -74,27 +83,32 @@ class System:
         t = 0
         while True:
             self.update()
-            t += 1/self.n
+            t += 1.0/self.n
             if self.m == 0 or self.m == self.n: 
                 return t
             elif not nx.is_connected(self.graph):
-                print("not connected, shouldn't happen, exiting")
-                exit(1)
+                print(nx.connected_components(self.graph))
+                return t
             
-def eval(tup):
+def simulate(tup):
     phi, eta = tup
     S = System(100, nx.generators.barabasi_albert_graph, [4], phi, eta)
     return S.run()
 
 if __name__ == "__main__":
-    pool = Pool(processes=8)
+    pool = Pool(processes=2)
     runs = 100
 
-    f = open("grid100.dat", 'w')
-    print("# phi eta t", file=f)
+    f = open("grid{0}.dat".format(runs), 'w')
+    f.write("# phi eta t\n")
 
-    for phi in np.linspace(0.05, 0.9, 18):
-        for eta in np.linspace(0.05, 0.95, 19):
-            ts = pool.map(eval, [(phi, eta)] * runs)
-            print(phi, eta, np.mean(ts), file=f, flush=True)
+    for phi in [x * 0.05 for x in range(1,20)]:
+        for eta in [x * 0.05 for x in range(1,20)]:
+            ls = [(phi, eta)] * runs
+            ts = pool.map(simulate, ls)
+            f.write("{0} {1} {2}\n".format(phi, eta, np.mean(ts)))
+
+        f.flush()
+
+
 
