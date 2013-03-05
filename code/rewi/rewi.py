@@ -1,16 +1,30 @@
 #!/usr/bin/env python3
 import networkx as nx
 #import numpypy as np
-import numpypy as np
+import sys
+if sys.version.find("PyPy") != -1:
+    import numpypy as np
+else:
+    import numpy as np
 #from numpypy.random import randint
 #from numpypy.random import rand
 import random
 from random import random as rand
 from multiprocessing import Pool
-#import matplotlib.pyplot as plt
 
 def randint(n):
     return random.randint(0, n - 1)
+
+def randweight(l):
+    r = rand()
+    s = 0
+    for i, v in enumerate(l):
+        s += v
+        if s >= r:
+            return i
+    print("Weigthed random not working.")
+    assert False
+
 
 eps = 1e-10
 
@@ -31,6 +45,7 @@ class System:
     def update_link(self, i):
         n = self.n
         neis = list(self.graph.edge[i].keys())
+        degs = np.array([self.graph.degree().values()])
         candidates = np.ones(n, dtype=int)
         candidates[i] = 0
         #candidates[neis] = 0
@@ -44,10 +59,12 @@ class System:
 
         #candidates = np.nonzero(candidates)[0]
         candidates = [k for k in range(n) if candidates[k] == 1] # pypy
-
+        degs = degs[candidates]
+        
         if list(candidates):
 
-            newnei = candidates[randint(len(candidates))]
+            #newnei = candidates[randint(len(candidates))]
+            newnei = candidates(randweight(degs/sum(degs)));
             self.graph.add_edge(i, newnei)
 
             if neis:
@@ -97,7 +114,7 @@ def simulate(tup):
 
 if __name__ == "__main__":
     pool = Pool(processes=2)
-    runs = 100
+    runs = 10
 
     f = open("grid{0}.dat".format(runs), 'w')
     f.write("# phi eta t\n")
@@ -105,7 +122,7 @@ if __name__ == "__main__":
     for phi in [x * 0.05 for x in range(1,20)]:
         for eta in [x * 0.05 for x in range(1,20)]:
             ls = [(phi, eta)] * runs
-            ts = pool.map(simulate, ls)
+            ts = map(simulate, ls)
             f.write("{0} {1} {2}\n".format(phi, eta, np.mean(ts)))
 
         f.flush()
