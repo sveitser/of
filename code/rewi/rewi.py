@@ -45,7 +45,7 @@ class System:
     def update_link(self, i):
         n = self.n
         neis = list(self.graph.edge[i].keys())
-        degs = np.array([self.graph.degree().values()])
+        degs = np.array(self.graph.degree().values())
         candidates = np.ones(n, dtype=int)
         candidates[i] = 0
         #candidates[neis] = 0
@@ -64,19 +64,16 @@ class System:
         if list(candidates):
 
             #newnei = candidates[randint(len(candidates))]
-            newnei = candidates(randweight(degs/sum(degs)));
-            self.graph.add_edge(i, newnei)
+            newnei = candidates[randweight(degs/float(sum(degs)))];
 
             if neis:
                 oldnei = neis[randint(len(neis))]
 
-                # if oldnei is now alone, reconnect it randomly
-                # too keep the graph connected
+                # if oldnei would become isolated don't do anything
                 if len(list(self.graph.edge[oldnei].keys())) <= 1:
-                    cands = list(set(range(self.n)).difference([i, oldnei]))
-                    c = cands[randint(len(cands))]
-                    self.graph.add_edge(oldnei, c)
-                
+                    return
+                                
+                self.graph.add_edge(i, newnei)
                 self.graph.remove_edge(i, oldnei)
 
 
@@ -101,30 +98,36 @@ class System:
         while True:
             self.update()
             t += 1.0/self.n
-            if self.m == 0 or self.m == self.n: 
+            if self.m == 0 or self.m == self.n or t >= 1000: 
                 return t
-            elif not nx.is_connected(self.graph):
-                print(nx.connected_components(self.graph))
-                return t
+            #elif not nx.is_connected(self.graph):
+            #    print(nx.connected_components(self.graph))
+            #    return t
             
 def simulate(tup):
     phi, eta = tup
-    S = System(100, nx.generators.barabasi_albert_graph, [4], phi, eta)
+    S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta)
     return S.run()
 
 if __name__ == "__main__":
-    pool = Pool(processes=2)
-    runs = 10
+    pool = Pool(processes=8)
+    runs = 10000
 
-    f = open("grid{0}.dat".format(runs), 'w')
+
+    f = open("data/grid{0}.dat".format(runs), 'w')
     f.write("# phi eta t\n")
 
-    for phi in [x * 0.05 for x in range(1,20)]:
+    for phi in [x * 0.025 for x in range(1,20)]:
         for eta in [x * 0.05 for x in range(1,20)]:
             ls = [(phi, eta)] * runs
-            ts = map(simulate, ls)
+            ts = pool.map(simulate, ls)
+            ts.sort()
+            f2 = open("data/ts_phi{0}_eta{1}.dat".format(phi,eta), 'w')
+            for t in ts:
+                f2.write("{0}\n".format(t))
+            
             f.write("{0} {1} {2}\n".format(phi, eta, np.mean(ts)))
-
+            
         f.flush()
 
 

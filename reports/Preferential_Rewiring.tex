@@ -1,0 +1,27 @@
+\documentclass[a4paper,12pt]{scrartcl}
+\usepackage{hyperref}
+\usepackage{bibentry}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\newcommand{\figwidth}{0.49\linewidth}
+\title{Consensus Time in Preferential Rewiring Model}
+\author{Mathis Antony}
+
+\begin{document}
+\maketitle
+\section{Model}
+As discussed last week, an Agent chosen to update either updates his opinion (with probability $\phi$) to agree with the majority of his neighbors or rewires a link (with probability $1-\phi$). We have homophilic respectively heterophilic agents who rewire to agents with the same respectively different opinions. The density of heterophilic agents is $\eta$. The rewiring is done preferentially like in the generative process for BA networks: the probability that an node (or agent) receives the new link is proportional to the degree of the node. Initially we use a BA network with 100 Agents and attachment parameter $m=2$\footnote{Here this is actually an important parameter. If it is even, there will be a more tie situation than when it is odd. Opinions therefore change less often and the consensus time is expected to increase. Some preliminary results suggest that the consensus time is a bout an order of magnitude higher when $m=2$ as opposed to $m=3$.}.
+
+\section{Results}
+\begin{figure}
+\centering
+\includegraphics[width=\figwidth]{../code/rewi/fig/ecdf_phi01.pdf}
+\includegraphics[width=\figwidth]{../code/rewi/fig/ecdf_phi05.pdf}
+\includegraphics[width=\figwidth]{../code/rewi/fig/ecdf_phi09.pdf}
+\caption{Empirical cumulative distribution function of the consensus time. Each curve is made from 1000 trials.}
+\end{figure}
+
+
+\bibliographystyle{unsrt}
+\bibliography{../papers/refs/refs.bib}
+\end{document}
