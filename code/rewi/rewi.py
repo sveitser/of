@@ -1,16 +1,14 @@
-#!/usr/bin/env python3
+#!/home/mantony/code/bin/pypy
 import networkx as nx
-#import numpypy as np
 import sys
 if sys.version.find("PyPy") != -1:
     import numpypy as np
 else:
     import numpy as np
-#from numpypy.random import randint
-#from numpypy.random import rand
 import random
 from random import random as rand
 from multiprocessing import Pool
+import time
 
 def randint(n):
     return random.randint(0, n - 1)
@@ -110,8 +108,15 @@ def simulate(tup):
     return S.run()
 
 if __name__ == "__main__":
-    pool = Pool(processes=8)
-    runs = 10000
+
+    tstart = time.time()
+
+    if len(sys.argv) > 1:
+	nproc = int(sys.argv[1])
+    else:
+        nproc = 1
+    pool = Pool(processes=nproc)
+    runs = 100
 
 
     f = open("data/grid{0}.dat".format(runs), 'w')
@@ -129,6 +134,8 @@ if __name__ == "__main__":
             f.write("{0} {1} {2}\n".format(phi, eta, np.mean(ts)))
             
         f.flush()
+
+    print("nproc {0}, {1} s\n".format(nproc,time.time() - tstart))
 
 
 
