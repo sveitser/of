@@ -115,29 +115,10 @@ def simulate(tup):
     S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta)
     return S.run()
 
-if __name__ == "__main__":
-
+def grid(nproc, runs):
     tstart = time.time()
-
-    if len(sys.argv) <= 1:
-        print("usage: ./rewi.py nproc/test")
-        exit(1)
-    elif sys.argv[1] == "test":
-        # do some tests
-        S = System(100, nx.generators.barabasi_albert_graph, [3], 0.5, 0.5)
-        t = S.run()
-        print("degree dist:")
-        print(S.degree_dist())
-        print("Consensus Time: {0}".format(t))
-        exit(0)
-    else:
-    	nproc = int(sys.argv[1])
-    
     pool = Pool(processes=nproc)
     runs = 100
-
-
-
     f = open("data/grid{0}.dat".format(runs), 'w')
     f.write("# phi eta t\n")
 
@@ -156,5 +137,22 @@ if __name__ == "__main__":
 
     print("nproc {0}, {1} s\n".format(nproc,time.time() - tstart))
 
+
+if __name__ == "__main__":
+    if len(sys.argv) <= 1:
+        print("usage: ./rewi.py nproc/test")
+        exit(1)
+    elif sys.argv[1] == "test":
+        S = System(100, nx.generators.barabasi_albert_graph, [3], 0.5, 0.5)
+        t = S.run()
+        print("degree dist:")
+        print(S.degree_dist())
+        print("Consensus Time: {0}".format(t))
+        exit(0)
+    else:
+    	nproc = int(sys.argv[1])
+
+   
+   
 
 
