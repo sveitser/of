@@ -101,6 +101,14 @@ class System:
             #elif not nx.is_connected(self.graph):
             #    print(nx.connected_components(self.graph))
             #    return t
+
+    def degree_dist(self):
+        degs = self.graph.degree().values()
+        d = np.zeros(self.n, dtype=int)
+        for n in degs:
+            d[n] += 1
+        return d
+
             
 def simulate(tup):
     phi, eta = tup
@@ -111,12 +119,23 @@ if __name__ == "__main__":
 
     tstart = time.time()
 
-    if len(sys.argv) > 1:
-	nproc = int(sys.argv[1])
+    if len(sys.argv) <= 1:
+        print("usage: ./rewi.py nproc/test")
+        exit(1)
+    elif sys.argv[1] == "test":
+        # do some tests
+        S = System(100, nx.generators.barabasi_albert_graph, [3], 0.5, 0.5)
+        t = S.run()
+        print("degree dist:")
+        print(S.degree_dist())
+        print("Consensus Time: {0}".format(t))
+        exit(0)
     else:
-        nproc = 1
+    	nproc = int(sys.argv[1])
+    
     pool = Pool(processes=nproc)
     runs = 100
+
 
 
     f = open("data/grid{0}.dat".format(runs), 'w')
