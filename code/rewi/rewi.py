@@ -73,8 +73,6 @@ class System:
                                 
                 self.graph.add_edge(i, newnei)
                 self.graph.remove_edge(i, oldnei)
-
-
         
     def update_state(self, i):
         neis = list(self.graph.edge[i].keys())
@@ -109,6 +107,20 @@ class System:
             d[n] += 1
         return d
 
+    def degree_dist_type(self):
+        degs = self.graph.degree().values()
+        d = np.zeros([2, self.n], dtype=int)
+        for n, t in zip(degs, self.types):
+            d[t, n] += 1
+        return d
+
+
+    def draw(self):
+        nx.draw(self.graph)
+        nx.draw_networkx_nodes(self.graph, pos=nx.spring_layout(S.graph),
+                 node_color=["r" if x==0 else "b" for x in S.types])
+
+
             
 def simulate(tup):
     phi, eta = tup
@@ -141,7 +153,7 @@ def grid(nproc, runs):
 def degs(dummy):
     S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta)
     t = S.run()
-    return S.degree_dist()
+    return S.degree_dist_type()
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
@@ -150,23 +162,27 @@ if __name__ == "__main__":
     elif sys.argv[1] == "test":
         S = System(100, nx.generators.barabasi_albert_graph, [3], 0.5, 0.5)
         t = S.run()
+        print("Consensus Time: {0}".format(t))
         print("degree dist:")
         print(S.degree_dist())
-        print("Consensus Time: {0}".format(t))
+        print("degree dist by type:")
+        print(S.degree_dist_type())
+        S.draw()
         exit(0)
     else:
     	nproc = int(sys.argv[1])
 
-    phi = 0.5
-    eta = 0.5
+    phi = float(sys.argv[3])
+    eta = float(sys.argv[4])
     nruns = int(sys.argv[2])
 
     pool = Pool(processes=nproc)
-    res = pool.map(degs, [[] for i in range(nruns)])
+    res = pool.map(degs, [0] * nruns)
     m = np.mean(res, 0)
     print(m)
 
-    np.savetxt("data/ddist_phi{0}_eta{1}_n{2}.dat".format(phi,eta,nruns), m)
+    np.savetxt("data/ddist_type_phi{0}_eta{1}_n{2}.dat".format(phi,eta,nruns), m)
+
 
    
 
