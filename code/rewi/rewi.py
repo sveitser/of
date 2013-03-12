@@ -138,9 +138,14 @@ def grid(nproc, runs):
     print("nproc {0}, {1} s\n".format(nproc,time.time() - tstart))
 
 
+def degs(dummy):
+    S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta)
+    t = S.run()
+    return S.degree_dist()
+
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
-        print("usage: ./rewi.py nproc/test")
+        print("usage: ./rewi.py nproc nruns/test")
         exit(1)
     elif sys.argv[1] == "test":
         S = System(100, nx.generators.barabasi_albert_graph, [3], 0.5, 0.5)
@@ -152,7 +157,17 @@ if __name__ == "__main__":
     else:
     	nproc = int(sys.argv[1])
 
-   
+    phi = 0.5
+    eta = 0.5
+    nruns = int(sys.argv[2])
+
+    pool = Pool(processes=nproc)
+    res = pool.map(degs, [[] for i in range(nruns)])
+    m = np.mean(res, 0)
+    print(m)
+
+    np.savetxt("data/ddist_phi{0}_eta{1}_n{2}.dat".format(phi,eta,nruns), m)
+
    
 
 
