@@ -106,7 +106,7 @@ class System:
     def update_state(self, i):
         oi = self.opinions[i]
         maj = self.majority(i)
-        if maj != oi:
+        if maj and maj != oi:
             self.m += -2*oi + 1
             self.opinions[i] = (oi + 1) % 2
 
