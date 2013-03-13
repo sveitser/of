@@ -145,8 +145,7 @@ def simulate(tup):
 def grid(nproc, runs):
     tstart = time.time()
     pool = Pool(processes=nproc)
-    runs = 100
-    f = open("data/grid{0}.dat".format(runs), 'w')
+    f = open("data/grid{0}_pref.dat".format(runs), 'w')
     f.write("# phi eta t\n")
 
     for phi in [x * 0.025 for x in range(1,20)]:
@@ -187,16 +186,19 @@ if __name__ == "__main__":
     else:
     	nproc = int(sys.argv[1])
 
-    phi = float(sys.argv[3])
-    eta = float(sys.argv[4])
+    #phi = float(sys.argv[3])
+    #eta = float(sys.argv[4])
+    
     nruns = int(sys.argv[2])
 
-    pool = Pool(processes=nproc)
-    res = pool.map(degs, [0] * nruns)
-    m = np.mean(res, 0)
-    print(m)
+    grid(nproc, nruns)
 
-    np.savetxt("data/ddist_type_phi{0}_eta{1}_n{2}.dat".format(phi,eta,nruns), m)
+    #pool = Pool(processes=nproc)
+    #res = pool.map(degs, [0] * nruns)
+    #m = np.mean(res, 0)
+    #print(m)
+
+    #np.savetxt("data/ddist_type__phi{0}_eta{1}_n{2}.dat".format(phi,eta,nruns), m)
 
 
    
