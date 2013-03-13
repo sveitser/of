@@ -24,10 +24,11 @@ def randweight(l):
     assert False
 
 class System:
-    def __init__(self, n, generator, genargs=None, phi=0.5, eta=0.5):
+    def __init__(self, n, generator, genargs=None, phi=0.5, eta=0.5,
+             majority="weighted"):
         """
         phi: probability of rewiring
-        eta: fraction of heterophil (type 1) agents
+        eta: fraction of heterophilic (type 1) agents
         """
         self.graph = generator(n, *genargs)
         self.opinions = np.array([randint(2) for i in range(n)], dtype=int)
@@ -36,6 +37,11 @@ class System:
         self.phi = phi
         self.n = n
         self.m = sum(self.opinions)
+        if majority == "weighted":
+            self.majority = self.majority_weighted
+        else:
+            self.majority = self.majority_unweighted
+
     
     def update_link(self, i):
         n = self.n
@@ -71,7 +77,7 @@ class System:
                 self.graph.add_edge(i, newnei)
                 self.graph.remove_edge(i, oldnei)
 
-    def majority(self, i):
+    def majority_weighted(self, i):
         neis = self.graph.neighbors(i)
         degs = self.graph.degree(neis)
         w = np.zeros(2, dtype=int)
@@ -83,6 +89,17 @@ class System:
         elif w[1] > w[0]:
             return 1
         else: 
+            return None
+
+    def majority_unweighted(self, i):
+        neis = self.graph.neighbors(i)
+        z = sum(self.opinions[neis] == 0)
+        half = len(neis) / 2
+        if z > half:
+            return 0
+        elif z < half:
+            return 1
+        else:
             return None
 
 
@@ -171,7 +188,8 @@ if __name__ == "__main__":
         print("usage: ./rewi.py nproc nruns/test")
         exit(1)
     elif sys.argv[1] == "test":
-        S = System(100, nx.generators.barabasi_albert_graph, [3], 0.5, 0.5)
+        S = System(100, nx.generators.barabasi_albert_graph, [3], 0.5, 0.5,
+                majority="unweighted")
         t = S.run()
         print("Consensus Time: {0}".format(t))
         print("degree dist:")
