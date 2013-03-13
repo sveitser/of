@@ -42,7 +42,7 @@ class System:
     
     def update_link(self, i):
         n = self.n
-        neis = list(self.graph.edge[i].keys())
+        neis = self.graph.neighbors(i)
         degs = np.array(self.graph.degree().values())
         candidates = np.ones(n, dtype=int)
         candidates[i] = 0
@@ -73,11 +73,26 @@ class System:
                                 
                 self.graph.add_edge(i, newnei)
                 self.graph.remove_edge(i, oldnei)
-        
+
+    def majority(self, i):
+        neis = self.graph.neighbors(i)
+        degs = self.graph.degree(neis)
+        w = np.zeros(2, dtype=int)
+        for op, key in zip(self.opinions[neis], degs):
+            w[op] += degs[key]
+
+        if w[0] > w[1]:
+            return 0
+        elif w[1] > w[0]:
+            return 1
+        else: 
+            return None
+
+
     def update_state(self, i):
-        neis = list(self.graph.edge[i].keys())
         oi = self.opinions[i]
-        if sum(self.opinions[neis] == oi) < 0.5 * len(neis):
+        maj = self.majority(i)
+        if maj != oi:
             self.m += -2*oi + 1
             self.opinions[i] = (oi + 1) % 2
 
@@ -94,7 +109,7 @@ class System:
         while True:
             self.update()
             t += 1.0/self.n
-            if self.m == 0 or self.m == self.n or t >= 1000: 
+            if self.m == 0 or self.m == self.n or t >= 100: 
                 return t
             #elif not nx.is_connected(self.graph):
             #    print(nx.connected_components(self.graph))
