@@ -23,9 +23,6 @@ def randweight(l):
     print("Weigthed random not working.")
     assert False
 
-
-eps = 1e-10
-
 class System:
     def __init__(self, n, generator, genargs=None, phi=0.5, eta=0.5):
         """
