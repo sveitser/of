@@ -154,10 +154,9 @@ def simulate(tup):
     S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta)
     return S.run()
 
-def grid(nproc, runs):
-    tstart = time.time()
-    pool = Pool(processes=nproc)
-    f = open("data/grid{0}_pref.dat".format(runs), 'w')
+def grid(runs, rule):
+    pool = Pool()
+    f = open("data/grid{0}_{1}.dat".format(runs, rule), 'w')
     f.write("# phi eta t\n")
 
     for phi in [x * 0.025 for x in range(1,20)]:
@@ -165,15 +164,14 @@ def grid(nproc, runs):
             ls = [(phi, eta)] * runs
             ts = pool.map(simulate, ls)
             ts.sort()
-            f2 = open("data/ts_phi{0}_eta{1}.dat".format(phi,eta), 'w')
+            f2 = open("data/ts_phi{0}_eta{1}_{2}.dat".format(phi, eta, rule),
+                    'a')
             for t in ts:
                 f2.write("{0}\n".format(t))
             
             f.write("{0} {1} {2}\n".format(phi, eta, np.mean(ts)))
             
         f.flush()
-
-    print("nproc {0}, {1} s\n".format(nproc,time.time() - tstart))
 
 def consensus_time_distribution(nruns, phi, eta, maj_rule="weighted"):
     pool = Pool()
@@ -211,14 +209,14 @@ if __name__ == "__main__":
         exit(0)
 
     nruns = int(sys.argv[1])
-    phi = float(sys.argv[2])
-    eta = float(sys.argv[3])
-    maj_rule = sys.argv[4]
-    consensus_time_distribution(nruns, phi, eta, maj_rule)
+    maj_rule = sys.argv[2]
+    #phi = float(sys.argv[2])
+    #eta = float(sys.argv[3])
+    #consensus_time_distribution(nruns, phi, eta, maj_rule)
 
 
 
-    #grid(nproc, nruns)
+    grid(nruns, maj_rule)
 
     #pool = Pool(processes=nproc)
     #res = pool.map(degs, [0] * nruns)
