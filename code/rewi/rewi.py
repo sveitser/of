@@ -20,7 +20,6 @@ def randweight(l):
         s += v
         if s >= r:
             return i
-    print("Weigthed random not working.")
     assert False
 
 class System:
@@ -39,9 +38,10 @@ class System:
         self.m = sum(self.opinions)
         if majority == "weighted":
             self.majority = self.majority_weighted
-        else:
+        elif majority == "unweighted":
             self.majority = self.majority_unweighted
-
+        else:
+            assert False
     
     def update_link(self, i):
         n = self.n
@@ -83,7 +83,7 @@ class System:
         w = np.zeros(2, dtype=int)
         for op, key in zip(self.opinions[neis], degs):
             w[op] += degs[key]
-
+        
         if w[0] > w[1]:
             return 0
         elif w[1] > w[0]:
@@ -94,7 +94,7 @@ class System:
     def majority_unweighted(self, i):
         neis = self.graph.neighbors(i)
         z = sum(self.opinions[neis] == 0)
-        half = len(neis) / 2
+        half = len(neis) / 2.0
         if z > half:
             return 0
         elif z < half:
@@ -106,7 +106,7 @@ class System:
     def update_state(self, i):
         oi = self.opinions[i]
         maj = self.majority(i)
-        if maj and maj != oi:
+        if maj != None and maj != oi:
             self.m += -2*oi + 1
             self.opinions[i] = (oi + 1) % 2
 
@@ -148,9 +148,7 @@ class System:
         nx.draw(self.graph)
         nx.draw_networkx_nodes(self.graph, pos=nx.spring_layout(S.graph),
                  node_color=["r" if x==0 else "b" for x in S.types])
-
-
-            
+                
 def simulate(tup):
     phi, eta = tup
     S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta)
@@ -166,6 +164,7 @@ def grid(nproc, runs):
         for eta in [x * 0.05 for x in range(1,20)]:
             ls = [(phi, eta)] * runs
             ts = pool.map(simulate, ls)
+            ts = map(simulate, ls)
             ts.sort()
             f2 = open("data/ts_phi{0}_eta{1}.dat".format(phi,eta), 'w')
             for t in ts:
@@ -177,6 +176,19 @@ def grid(nproc, runs):
 
     print("nproc {0}, {1} s\n".format(nproc,time.time() - tstart))
 
+def consensus_time_distribution(nruns, phi, eta, maj_rule="weighted"):
+    pool = Pool()
+    def ct(i):
+        S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta,
+            maj_rule)
+        return S.run()
+
+    ts = map(ct,range(nruns))
+    ts.sort()
+    f = open("data/ts_phi{0}_eta{1}_{2}.dat".format(phi, eta, maj_rule), 'a')
+    for t in ts:
+        f.write("{0}\n".format(t))
+
 
 def degs(dummy):
     S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta)
@@ -185,7 +197,7 @@ def degs(dummy):
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
-        print("usage: ./rewi.py nproc nruns/test")
+        print("usage: ./rewi.py nruns/test")
         exit(1)
     elif sys.argv[1] == "test":
         S = System(100, nx.generators.barabasi_albert_graph, [3], 0.5, 0.5,
@@ -198,15 +210,16 @@ if __name__ == "__main__":
         print(S.degree_dist_type())
         S.draw()
         exit(0)
-    else:
-    	nproc = int(sys.argv[1])
 
-    #phi = float(sys.argv[3])
-    #eta = float(sys.argv[4])
-    
-    nruns = int(sys.argv[2])
+    nruns = int(sys.argv[1])
+    phi = float(sys.argv[2])
+    eta = float(sys.argv[3])
+    maj_rule = sys.argv[4]
+    consensus_time_distribution(nruns, phi, eta, maj_rule)
 
-    grid(nproc, nruns)
+
+
+    #grid(nproc, nruns)
 
     #pool = Pool(processes=nproc)
     #res = pool.map(degs, [0] * nruns)
