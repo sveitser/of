@@ -164,7 +164,6 @@ def grid(nproc, runs):
         for eta in [x * 0.05 for x in range(1,20)]:
             ls = [(phi, eta)] * runs
             ts = pool.map(simulate, ls)
-            ts = map(simulate, ls)
             ts.sort()
             f2 = open("data/ts_phi{0}_eta{1}.dat".format(phi,eta), 'w')
             for t in ts:
@@ -183,7 +182,7 @@ def consensus_time_distribution(nruns, phi, eta, maj_rule="weighted"):
             maj_rule)
         return S.run()
 
-    ts = map(ct,range(nruns))
+    ts = pool.map(ct,range(nruns))
     ts.sort()
     f = open("data/ts_phi{0}_eta{1}_{2}.dat".format(phi, eta, maj_rule), 'a')
     for t in ts:
