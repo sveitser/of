@@ -125,23 +125,20 @@ class System:
             t += 1.0/self.n
             if self.m == 0 or self.m == self.n or t >= 100: 
                 return t
-            #elif not nx.is_connected(self.graph):
-            #    print(nx.connected_components(self.graph))
-            #    return t
 
     def degree_dist(self):
         degs = self.graph.degree().values()
         d = np.zeros(self.n, dtype=int)
         for n in degs:
             d[n] += 1
-        return d
+        return d.tolist() # pypy pool/numpypy fix
 
     def degree_dist_type(self):
         degs = self.graph.degree().values()
         d = np.zeros([2, self.n], dtype=int)
         for n, t in zip(degs, self.types):
             d[t, n] += 1
-        return d
+        return d.tolist() # pypy pool/numpypy fix
 
 
     def draw(self):
@@ -173,11 +170,11 @@ def grid(runs, rule):
             
         f.flush()
 
-def consensus_time_distribution(nruns, phi, eta, maj_rule="weighted"):
+def consensus_time_distribution(nruns, phi, eta, maj_rule):
     pool = Pool()
     def ct(i):
         S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta,
-            maj_rule)
+                maj_rule)
         return S.run()
 
     ts = pool.map(ct,range(nruns))
@@ -186,15 +183,28 @@ def consensus_time_distribution(nruns, phi, eta, maj_rule="weighted"):
     for t in ts:
         f.write("{0}\n".format(t))
 
-
-def degs(dummy):
-    S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta)
-    t = S.run()
+def dd(tup):
+    phi, eta, maj_rule = tup
+    S = System(100, nx.generators.barabasi_albert_graph, [3], phi, eta,
+           maj_rule)
+    S.run()
     return S.degree_dist_type()
+
+def degs(nruns, phi, eta, maj_rule):
+    pool = Pool()
+    dss = pool.map(dd, [(phi, eta, maj_rule)] * nruns)
+    ds = np.mean(dss, 0)
+    f = open("data/ddist_type_{0}_phi{1}_eta{2}_n{3}.dat".format(maj_rule,
+            phi, eta, nruns),
+            'w')
+    for d in ds:
+        for v in d:
+            f.write("{0} ".format(v))
+        f.write("\n")
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
-        print("usage: ./rewi.py nruns/test")
+        print("usage: ./rewi.py nruns/test rule symtype (phi eta)")
         exit(1)
     elif sys.argv[1] == "test":
         S = System(100, nx.generators.barabasi_albert_graph, [3], 0.5, 0.5,
@@ -210,20 +220,29 @@ if __name__ == "__main__":
 
     nruns = int(sys.argv[1])
     maj_rule = sys.argv[2]
-    #phi = float(sys.argv[2])
-    #eta = float(sys.argv[3])
-    #consensus_time_distribution(nruns, phi, eta, maj_rule)
+    symtype = sys.argv[3]
+    if symtype == "grid":
+        grid(nruns, maj_rule)
+    else:
+        phi = float(sys.argv[4])
+        eta = float(sys.argv[5])
+        if symtype  == "consensus_time_dist":
+            consensus_time_distribution(nruns, phi, eta, maj_rule)
+        elif symtype == "degree_distribution":
+            degs(nruns, phi, eta, maj_rule)
 
 
 
-    grid(nruns, maj_rule)
+
+
+
+
 
     #pool = Pool(processes=nproc)
     #res = pool.map(degs, [0] * nruns)
     #m = np.mean(res, 0)
     #print(m)
 
-    #np.savetxt("data/ddist_type__phi{0}_eta{1}_n{2}.dat".format(phi,eta,nruns), m)
 
 
    

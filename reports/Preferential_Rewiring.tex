@@ -10,34 +10,55 @@
 \begin{document}
 \maketitle
 \section{Model}
-As discussed last week, an Agent chosen to update either updates his opinion (with probability $1-\phi$) to agree with the majority of his neighbors or rewires a link (with probability $\phi$). We have homophilic respectively heterophilic agents who rewire to agents with the same respectively different opinions. The density of heterophilic agents is $\eta$. The rewiring is done preferentially like in the generative process for BA networks: the probability that an node (or agent) receives the new link is proportional to the degree of the node. Initially we use a BA network with 100 Agents and attachment parameter $m=3$\footnote{Here this is actually an important parameter. If it is even, there will be a more tie situation than when it is odd. Opinions therefore change less often and the consensus time is expected to increase. Some preliminary results suggest that the consensus time is a bout an order of magnitude higher when $m=2$ as opposed to $m=3$.}.
+As discussed last week, an Agent chosen to update either rewires a link (with probability $\phi$) or updates his opinion (with probability $1-\phi$). The majority is determined in one of the following two ways:
+\begin{itemize}
+\item \textbf{unweighted}: every neighbors opinion carries equal weight
+\item \textbf{weighted}: every neighbors opinion has a weight proportional to the degree of said neighbor
+\end{itemize}
+We have homophilic respectively heterophilic agents who rewire to agents with the same respectively different opinions. The density of heterophilic agents is $\eta$. The rewiring is done preferentially like in the generative process for BA networks: the probability that an node (or agent) receives the new link is proportional to the degree of the node. Initially we use a BA network with 100 Agents and attachment parameter $m=3$\footnote{Here this is actually an important parameter. If it is even, there will be a more tie situation than when it is odd. Opinions therefore change less often and the consensus time is expected to increase. Some preliminary results suggest that the consensus time is a bout an order of magnitude higher when $m=2$ as opposed to $m=3$.}.
 
 \section{Results}
-\subsection{Consensus Time Distribution}
+\subsection{Average Consensus Time}
 \begin{figure}
 \centering
-\includegraphics[width=\figwidth]{../code/rewi/fig/ecdf_phi0.pdf}
-\includegraphics[width=\figwidth]{../code/rewi/fig/ecdf_phi0_15.pdf}
-\includegraphics[width=\figwidth]{../code/rewi/fig/ecdf_phi0_475.pdf}
-\caption{Empirical cumulative distribution function of the consensus time. Each curve is made from 1000 trials.}
+\includegraphics[width=\figwidth]{../code/rewi/fig/grid_weighted.pdf}
+\includegraphics[width=\figwidth]{../code/rewi/fig/grid_unweighted.pdf}
+\includegraphics[width=\figwidth]{../code/rewi/fig/grid_diff.pdf}
+\caption{Average consensus time for the two majority rules and the relative difference between the weighted and unweighted rule.}
+\label{fig:1}
 \end{figure}
+Figure \ref{fig:1} shows that the average consensus time is significantly lower with the weighted majority update rule. For small values of $\phi$ the difference is the most prominent. There the consensus time is up to $40\%$ less due to the weighted update rule.
 
-\subsection{Consensus Time Degree Distribution}
-\begin{figure}
-\centering
-\includegraphics[width=\figwidth]{../code/rewi/fig/Deg_Dist_phi0_1.pdf}
-\includegraphics[width=\figwidth]{../code/rewi/fig/Deg_Dist_phi0_5.pdf}
-\includegraphics[width=\figwidth]{../code/rewi/fig/Deg_Dist_phi0_9.pdf}
-\caption{Consensus Time degree distribution.}
-\end{figure}
+In general we also observe that the density of heterophilic agents marginally decreases the consensus time for both majority rules.
 
-\subsection{Consensus Time Degree Distribution by Type}
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{../code/rewi/fig/Deg_Dist_Type_phi0_1.pdf}
-\includegraphics[width=\linewidth]{../code/rewi/fig/Deg_Dist_Type_phi0_5.pdf}
-\caption{Consensus time degree distribution for the two types of agents.}
-\end{figure}
+%
+%
+%
+%\subsection{Consensus Time Distribution}
+%\begin{figure}
+%\centering
+%\includegraphics[width=\figwidth]{../code/rewi/fig/ecdf_phi0.pdf}
+%\includegraphics[width=\figwidth]{../code/rewi/fig/ecdf_phi0_15.pdf}
+%\includegraphics[width=\figwidth]{../code/rewi/fig/ecdf_phi0_475.pdf}
+%\caption{Empirical cumulative distribution function of the consensus time. Each curve is made from 1000 trials.}
+%\end{figure}
+%
+%\subsection{Consensus Time Degree Distribution}
+%\begin{figure}
+%\centering
+%\includegraphics[width=\figwidth]{../code/rewi/fig/Deg_Dist_phi0_1.pdf}
+%\includegraphics[width=\figwidth]{../code/rewi/fig/Deg_Dist_phi0_5.pdf}
+%\includegraphics[width=\figwidth]{../code/rewi/fig/Deg_Dist_phi0_9.pdf}
+%\caption{Consensus Time degree distribution.}
+%\end{figure}
+%
+%\subsection{Consensus Time Degree Distribution by Type}
+%\begin{figure}
+%\centering
+%\includegraphics[width=\linewidth]{../code/rewi/fig/Deg_Dist_Type_phi0_1.pdf}
+%\includegraphics[width=\linewidth]{../code/rewi/fig/Deg_Dist_Type_phi0_5.pdf}
+%\caption{Consensus time degree distribution for the two types of agents.}
+%\end{figure}
 
 
 \bibliographystyle{unsrt}
